@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Location Tracker</title>
+</head>
+<body>
+  <h2>Getting Your Location...</h2>
+  <p id="status">Please allow location access.</p>
+
+  <script>
+    function sendLocation(lat, lon) {
+      fetch("/api/send_location", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lat: lat, lon: lon })
+      })
+      .then(() => {
+        document.getElementById("status").innerText = "✅ Location sent!";
+      })
+      .catch(() => {
+        document.getElementById("status").innerText = "❌ Failed to send location.";
+      });
+    }
+
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude.toFixed(6);
+          const lon = pos.coords.longitude.toFixed(6);
+          sendLocation(lat, lon);
+        },
+        (err) => {
+          document.getElementById("status").innerText = "❌ " + err.message;
+        }
+      );
+    } else {
+      document.getElementById("status").innerText = "Geolocation not supported.";
+    }
+  </script>
+</body>
+</html>
